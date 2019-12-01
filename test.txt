@@ -1,0 +1,85 @@
+
+
+pfomegaC=(pfo+(p-1)*pfomegaB)/p;
+
+
+pfamin=max(0,(pfo+p-1)/p);
+pfamax=min(1,pfo/p);
+
+
+pfomegad=sort([pfomegaA;pfomegaC]);
+pfAr=find((pfomegaA>=pfamin) & (pfomegaA<=pfamax));
+PfCr=find((pfomegaC>=pfamin) & (pfomegaC<=pfamax));
+pfomegadd=pfomegad( (pfomegad>=pfamin) & (pfomegad<=pfamax));
+
+ia=ismember(pfomegadd,pfomegaA);
+ib=ismember(pfomegadd,pfomegaC);
+
+scc=zeros(length(pfomegadd)-1,1);
+sta=pfAr(1);
+stc=PfCr(end);
+for i = 1:length(scc)
+    
+    scc(i)=saa(sta)-sbb(stc);
+    if ia(i+1)
+        sta=sta+1;
+    end
+    if ib(i+1)
+        stc=stc-1;
+    end
+    
+    
+end
+
+
+figure
+
+for i=1:length(scc)
+    line([pfomegadd(i),pfomegadd(i+1)],[scc(i) scc(i)])
+    hold on
+end
+axis([pfomegadd(1),pfomegadd(end),scc(end),scc(1)])
+
+xlabel('$P_{f}^A$','Interpreter','latex','FontWeight','bold','FontSize',30,'FontName','Arial');
+
+% Create ylabel
+ylabel('$S^C$','Interpreter','latex','HorizontalAlignment','right','FontWeight','bold',...
+    'FontSize',30,...
+    'FontName','Arial',...
+    'Rotation',0);
+
+
+
+
+pfap=pfomegadd(find(scc<0,1));
+pfbp=(pfo-p*pfap)/(1-p);
+
+if ismember(pfap,pfomegaA)
+   pdap=pdomegaA(pfomegaA==pfap);
+   pt=find(pfomegaB>pfbp,1);
+   pfbw2=pfomegaB(pt);
+   pfbw1=pfomegaB(pt-1);
+   pdbw2=pdomegaB(pt);
+   pdbw1=pdomegaB(pt-1);
+ 
+   qpp=(pfo-p*(pfap)-(1-p)*pfbw2)/((1-p)*(pfbw1-pfbw2));
+   pfw3=qpp*pfbw1+(1-qpp)*pfbw2;
+   pdw3=qpp*pdbw1+(1-qpp)*pdbw2;
+   pflf=p*pfap+(1-p)*(1-qpp)*pfbw2+(1-p)*qpp*pfbw1;
+   pdlf=p*pdap+(1-p)*(1-qpp)*pdbw2+(1-p)*qpp*pdbw1;
+end
+
+if ismember(pfbp,pfomegaB)
+   pdbp=pdomegaB(pfomegaB==pfbp);
+   pt=find(pfomegaA>pfbp,1);
+   pfaw2=pfomegaA(pt);
+   pfaw1=pfomegaA(pt-1);
+   pdaw2=pdomegaA(pt);
+   pdaw1=pdomegaA(pt-1);
+ 
+   qpp=(pfo-(1-p)*(pfbp)-p*pfaw2)/(p*(pfaw1-pfaw2));
+   pfw3=qpp*pfaw1+(1-qpp)*pfaw2;
+   pdw3=qpp*pdaw1+(1-qpp)*pdaw2;
+   pflf=(1-p)*pfbp+p*(1-qpp)*pfaw2+p*qpp*pfaw1;
+   pdlf=(1-p)*pfbp+p*(1-qpp)*pdaw2+p*qpp*pdaw1;
+end
